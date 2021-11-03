@@ -1,8 +1,11 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
 let Customer = require('../models/customer.model');
 //var ObjectID = require('mongodb').ObjectID;
 
+const { uploadFile, getFileStream } = require('../s3');
 
 router.route('/').get((req, res) => {
   console.log("Inside /");
@@ -15,6 +18,38 @@ router.route('/').get((req, res) => {
 //   console.log("Inside get Login Request");
 //   console.log("Req Body : ", req.query.email);
 // })
+
+router.post('/images', upload.single('image'), async (req, res) => {
+  console.log("Inside upload customer profile photo");
+  const file = req.file;
+  console.log("image is", file);
+  const result = await uploadFile(file);
+  console.log("upload result", result);
+  var CustomerID = req.body.CustomerID;
+  console.log("customer id for file upload, ", CustomerID);
+  Customer.findByIdAndUpdate(CustomerID, { ProfilePicPath: `http://localhost:5000/customer/images/${result.Key}` },{$upsert:true}, (error, profile) => {
+    if (error) {
+      res.writeHead(205, {
+        "Content-Type": "text/plain",
+      });
+      res.end();
+    }
+    if (profile) {
+      
+      res.status(200).send(`http://localhost:5000/customer/images/${result.Key}`);
+      return;
+    }
+    // res.send(`http://localhost:5000/customer/images/${result.Key}`)
+  })
+})
+
+router.get('/images/:key', (req, res) => {
+  console.log("requuuuueeeesssttttt.paraaammmss",req.params)
+  const key = req.params.key
+  const readStream = getFileStream(key)
+
+  readStream.pipe(res)
+})
 
 //Route to handle Post Request Call for Customer Login
 router.route('/customerLogin').post((req, res) =>{
@@ -131,6 +166,9 @@ router.route("/getCustomerProfile").get( (req, res)=> {
     }
     else {
       console.log(result);
+      // var key = result.ProfilePicPath;
+      // const readStream = getFileStream(key);
+
       let resjson = {
               name: result.Name,
               birthdate: result.DOB,
@@ -138,7 +176,8 @@ router.route("/getCustomerProfile").get( (req, res)=> {
               location: result.Location,
               city: result.City,
               State: result.State,
-              country: result.Country
+              country: result.Country,
+              ProfilePicPath: result.ProfilePicPath
             };
       console.log(resjson);
       res.status(200).send(resjson);

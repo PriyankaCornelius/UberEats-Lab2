@@ -19,6 +19,7 @@ import { Navbar } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import Logout from './logout';
 import axios from 'axios';
+import { useState } from 'react'
 class CustomerProfile extends React.Component {
     constructor(props) {
         super(props);
@@ -30,7 +31,8 @@ class CustomerProfile extends React.Component {
             city: "",
             State: "",
             country: "",
-            file:""
+            image: [],
+            ProfilePicPath:""
         }
     }
     componentDidMount() {
@@ -52,7 +54,8 @@ class CustomerProfile extends React.Component {
                         location: response.data.location,
                         city:response.data.city,
                         State:response.data.State,
-                        country:response.data.country || "India"
+                        country: response.data.country || "India",
+                        ProfilePicPath: response.data.ProfilePicPath,
                     });
                 }
         });
@@ -126,24 +129,38 @@ class CustomerProfile extends React.Component {
             });
     }
 
-    // async function postImage({image}) {
-    //     const formData = new FormData();
-    //     formData.append("image", image)
-      
-    //     const result = await axios.post('/images', formData, { headers: {'Content-Type': 'multipart/form-data'}})
-    //     return result.data
-    //   }
+    
     fileSelected = e => {
         e.preventDefault();
-        const file = e.target.files[0];
-        this.setState({ file: file }, () => {
-            console.log("fiiiillleee",this.state.file)
+        const image = e.target.files[0];
+        console.log("ee . target, ", e.target.files[0])
+        this.setState({ image: image }, () => {
+            console.log("fiiiillleee",this.state.image)
         });
     }
 
+    submit = event => {
+        event.preventDefault()
+        const image = this.state.image;
+        const formData = new FormData();
+        formData.append("image", image);
+        formData.append("CustomerID", localStorage.getItem("c_id"));
+        console.log("formdata", formData.get('image'));
+        
+        const result = axios.post('http://localhost:5000/customer/images', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+            .then((response) => {
+                console.log("Status Code : ", response.status, "and", response.data);
+                this.setState({
+                    ProfilePicPath: response.data
+                })
+            })
+        
+        
+      }
+
     // submit = async event => {
     //     event.preventDefault();
-    //     const result = await postImage({image: this.state.file})
+    //     const result = await postImage({image: this.state.image})
     //     this.setState({ result: result });
     //   }
 
@@ -176,18 +193,7 @@ class CustomerProfile extends React.Component {
 
                 <div className="customerProfile">
                     <Row>
-                        <Col>
-                        <form onSubmit={this.submit}>
-                            <input onChange={this.fileSelected} type="file"></input>
-                            {/* <img src="" alt="photo"></img> */}
-                            {/* {this.state.file.map(image => (
-                                <div key={image}> */}
-                    <img src={require("../images/photo.jpg").default} height="200" width="200" alt=""></img>
-                                {/* </div>
-                            ))} */}
-                                <button type="submit">Submit</button>
-                            </form>
-                        </Col>
+                        
                         <Col>
                             <div>
                                 <Form onSubmit={this.updateCustomerProfile}>
@@ -202,6 +208,7 @@ class CustomerProfile extends React.Component {
                                     </Col>
                                 </Row>
                             </Form.Group>
+                            <br></br>
                             <Form.Group>
                                 <Row>
                                     <Col>
@@ -211,7 +218,8 @@ class CustomerProfile extends React.Component {
                                         <Form.Control type="date" id="birthdate" className="text-center" placeholder="Date of birth" aria-readonly value={this.state.birthdate} onChange={this.birthdateChangeHandler}></Form.Control>
                                     </Col>
                                 </Row>
-                                </Form.Group>
+                                    </Form.Group>
+                                    <br></br>
                                 <Form.Group>
                                 <Row>
                                     <Col>
@@ -221,7 +229,8 @@ class CustomerProfile extends React.Component {
                                         <Form.Control type="text" id="address" className="text-center" placeholder="Address" aria-readonly value={this.state.address} onChange={this.addressChangeHandler}></Form.Control>
                                     </Col>
                                 </Row>
-                            </Form.Group>
+                                    </Form.Group>
+                                    <br></br>
                             <Form.Group>
                                 <Row>
                                     <Col>
@@ -231,7 +240,8 @@ class CustomerProfile extends React.Component {
                                         <Form.Control type="text" id="location" className="text-center" placeholder="Location" aria-readonly value={this.state.location} onChange={this.locationChangeHandler}></Form.Control>
                                     </Col>
                                 </Row>
-                            </Form.Group>
+                                    </Form.Group>
+                                    <br></br>
                             <Form.Group>
                                 <Row>
                                     <Col>
@@ -241,7 +251,8 @@ class CustomerProfile extends React.Component {
                                         <Form.Control type="text" id="city" className="text-center" placeholder="City" aria-readonly value={this.state.city} onChange={this.cityChangeHandler}></Form.Control>
                                     </Col>
                                 </Row>
-                            </Form.Group>
+                                    </Form.Group>
+                                    <br></br>
                             <Form.Group>
                                 <Row>
                                     <Col>
@@ -251,7 +262,8 @@ class CustomerProfile extends React.Component {
                                         <Form.Control type="text" id="state" className="text-center" placeholder="State" aria-readonly value={this.state.State} onChange={this.StateChangeHandler}></Form.Control>
                                     </Col>
                                 </Row>
-                            </Form.Group> 
+                                    </Form.Group>
+                                    <br></br>
                             <Form.Group>
                                 <Row>
                                     <Col>
@@ -265,10 +277,22 @@ class CustomerProfile extends React.Component {
                                     </DropdownButton>
                                     </Col>
                                 </Row>
-                            </Form.Group>    
+                                    </Form.Group>
+                                    <br></br>        
                             {updateProfileButton}
                             </Form>
                             </div>
+                        </Col>
+
+                        <Col>
+                            
+                        <img src={this.state.ProfilePicPath} className="profilePhoto" height="200" width="200" alt="Add profile picture"></img>
+                        <form onSubmit={this.submit}>
+                                <input onChange={this.fileSelected} type="file" accept="image/*" name="image"></input>
+                                <br></br>
+                                <Button type="submit" className='btn m-3' variant="outline-success">Update Profile Picture</Button>
+                        </form>
+                           
                         </Col>
                     </Row>
                 </div>

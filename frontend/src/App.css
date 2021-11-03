@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.profilePhoto {
+  border-radius: 50%;
+}
+
+.restaurantProfilePhoto {
+  height: 300px;
+  width: 300px;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 50px;
+}

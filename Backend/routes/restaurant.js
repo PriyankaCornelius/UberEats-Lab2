@@ -1,6 +1,10 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
 let Restaurant = require('../models/restaurant.model');
+
+const { uploadFile, getFileStream } = require('../s3');
 
 router.route('/').get((req, res) => {
   console.log("Inside /");
@@ -8,6 +12,61 @@ router.route('/').get((req, res) => {
       .then(restaurant => { res.json(restaurant); console.log("hey")})
     .catch(err => res.status(400).json('Error: ' + err));
 });
+
+
+router.post('/images', upload.single('image'), async (req, res) => {
+  console.log("Inside upload Restaurant profile photo");
+  const file = req.file;
+  console.log("image is", file);
+  const result = await uploadFile(file);
+  console.log("upload result", result);
+  var RestaurantID = req.body.RestaurantID;
+  console.log("Restaurant id for file upload, ", RestaurantID);
+  Restaurant.findByIdAndUpdate(RestaurantID, { ProfilePicPath: `http://localhost:5000/restaurant/images/${result.Key}` },{$upsert:true}, (error, profile) => {
+    if (error) {
+      res.writeHead(205, {
+        "Content-Type": "text/plain",
+      });
+      res.end();
+    }
+    if (profile) {
+      res.status(200).send(`http://localhost:5000/restaurant/images/${result.Key}`);
+      return;
+    }
+    // res.send(`http://localhost:5000/customer/images/${result.Key}`)
+  })
+})
+
+router.get('/images/:key', (req, res) => {
+  console.log("requuuuueeeesssttttt.paraaammmss",req.params)
+  const key = req.params.key
+  const readStream = getFileStream(key)
+
+  readStream.pipe(res)
+})
+
+// router.post('/dishImages', upload.single('image'), async (req, res) => {
+//   console.log("Inside upload Restaurant profile photo");
+//   const file = req.file;
+//   console.log("image is", file);
+//   const result = await uploadFile(file);
+//   console.log("upload result", result);
+//   var RestaurantID = req.body.RestaurantID;
+//   console.log("Restaurant id for file upload, ", RestaurantID);
+//   Restaurant.findByIdAndUpdate(RestaurantID, { ProfilePicPath: `http://localhost:5000/restaurant/images/${result.Key}` },{$upsert:true}, (error, profile) => {
+//     if (error) {
+//       res.writeHead(205, {
+//         "Content-Type": "text/plain",
+//       });
+//       res.end();
+//     }
+//     if (profile) {
+//       res.status(200).send(`http://localhost:5000/restaurant/images/${result.Key}`);
+//       return;
+//     }
+//     // res.send(`http://localhost:5000/customer/images/${result.Key}`)
+//   })
+// })
 
 // router.route('/restaurantLogin').get((req, res) => {
 //   console.log("Inside get Login Request");
@@ -144,7 +203,8 @@ router.route("/getRestaurantProfile").get( (req, res)=> {
               description: result.Description,
               phoneNo: result.PhoneNum,
               address: result.Address,
-              timings: result.Timings
+              timings: result.Timings,
+              ProfilePicPath: result.ProfilePicPath
             };
       console.log(resjson);
       res.status(200).send(resjson);
@@ -211,9 +271,9 @@ router.route("/getRestaurants").get((req, res) =>{
   
 //Route to list of orders by customers for a restaurant
 router.route("/getRestaurantDishes").get( (req, res) =>{
-  console.log("Inside Restaurant orders section");
+  console.log("Inside get Restaurant dishes section");
   var RestaurantID = req.query.RestaurantID;
-  console.log(RestaurantID);
+  console.log("r-id",RestaurantID);
   Restaurant.findById(RestaurantID, (err, result)=> {
     if (err) {
       console.log('SQL Error:', err);
@@ -226,16 +286,20 @@ router.route("/getRestaurantDishes").get( (req, res) =>{
   });
 });
 
+
+
 //Route to create a new Dish for a restaurant
-router.route("/restaurantAddNewDish").post((req, res) =>{
+router.post("/restaurantAddNewDish",upload.single("image"),async (req, res) =>{
   console.log("Inside Add new Dish Request");
-  console.log("Req Body : ", req.body);
+  // console.log("Req Body : ", req.body);
+  const file = req.file;
+  const result = await uploadFile(file);
   var RestaurantID = req.body.RestaurantID;
   var idDishes = req.body.idDishes;
   var dishName = req.body.dishName;
   var price = req.body.price;
   var category = req.body.category;
-  var imageURL = req.body.imageURL;
+  // var image = req.body.image;
   var description = req.body.description;
   var ingredients = req.body.ingredients;
   Restaurant.findByIdAndUpdate(RestaurantID, { $push: { 
@@ -246,10 +310,10 @@ router.route("/restaurantAddNewDish").post((req, res) =>{
              "price": price,
              "description": description,
              "ingredients": ingredients,
-             "imageURL": imageURL,
+             "image": `http://localhost:5000/restaurant/images/${result.Key}`,
              "category": category,
            } //inserted data is the object to be inserted 
-  }} ,(error, profile) =>{
+  }} ,{$upsert:true},(error, profile) =>{
     if (error) {
       console.log('SQL Error:', err);
       res.writeHead(205, {
@@ -259,18 +323,18 @@ router.route("/restaurantAddNewDish").post((req, res) =>{
     }
     else {
       console.log("add new dish successfull!");
-      res.writeHead(200, {
-        "Content-Type": "text/plain",
-      });
-      res.end("add new dish successfull!");
+      res.status(200).send(`http://localhost:5000/restaurant/images/${result.Key}`);
+         return;
     }
   });
 });
 
 //Update Menue Item By Customer
-router.route("/restaurantEditNewDish").post((req, res) => {
+router.post("/restaurantEditNewDish",upload.single("image"),async (req, res) =>{
   console.log("Inside Update Dishes Edit section");
   
+  const file = req.file;
+  const result = await uploadFile(file);
   var RestaurantID = req.body.RestaurantID;
   var idDishes = req.body.idDishes;
 
@@ -281,7 +345,7 @@ router.route("/restaurantEditNewDish").post((req, res) => {
     price: req.body.price,
     description : req.body.description,
     ingredients : req.body.ingredients,
-    image : req.body.imageURL,
+    image : `http://localhost:5000/restaurant/images/${result.Key}`,
     category : req.body.category
   };
  

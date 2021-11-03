@@ -21,7 +21,8 @@ class RestaurantInfo extends React.Component {
             email:"",
             address: "",
             timings: "",
-            pictures:""
+            pictures: "",
+            image:[]
         }
     }
 
@@ -48,7 +49,8 @@ class RestaurantInfo extends React.Component {
                         description: response.data.description,
                         phoneNo: response.data.phoneNo,
                         address: response.data.address,
-                        timings: response.data.timings
+                        timings: response.data.timings,
+                        ProfilePicPath: response.data.ProfilePicPath,
                     });
                 }
             });
@@ -163,6 +165,34 @@ class RestaurantInfo extends React.Component {
                 }
             });
     }
+
+    fileSelected = e => {
+        e.preventDefault();
+        const image = e.target.files[0];
+        console.log("ee . target, ", e.target.files[0])
+        this.setState({ image: image }, () => {
+            console.log("fiiiillleee",this.state.image)
+        });
+    }
+
+    submit = event => {
+        event.preventDefault()
+        const image = this.state.image;
+        const formData = new FormData();
+        formData.append("image", image);
+        formData.append("RestaurantID", localStorage.getItem("r_id"));
+        console.log("formdata", formData.get('image'));
+        
+        const result = axios.post('http://localhost:5000/restaurant/images', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+            .then((response) => {
+                console.log("Status Code : ", response.status, "and", response.data);
+                this.setState({
+                    ProfilePicPath: response.data
+                })
+            })
+        
+        
+      }
 
     render() { 
         return (<React.Fragment>
@@ -295,7 +325,12 @@ class RestaurantInfo extends React.Component {
                     
                 </div>
                 <div className="col">
-                    <img src={require("../images/photo.jpg").default} height="200" width="200" alt=""></img>
+                        <img src={this.state.ProfilePicPath} className="profilePhoto" height="200" width="200" alt="Add profile picture"></img>
+                        <form onSubmit={this.submit}>
+                                <input onChange={this.fileSelected} type="file" accept="image/*" name="image"></input>
+                                <br></br>
+                                <Button type="submit" className='btn m-3' variant="outline-success">Update Profile Picture</Button>
+                        </form>
                 </div>
             </div>
         </React.Fragment>);

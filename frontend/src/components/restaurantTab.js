@@ -6,6 +6,7 @@ import CustomerDishes from './customerDishes';
 import axios from "axios";
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { Card } from 'react-bootstrap';
 //const axios = require('axios');
 class RestaurantTab extends React.Component {
 
@@ -23,7 +24,7 @@ class RestaurantTab extends React.Component {
             cuisine: "",
             deliveryMode: "",
             dietary: "",
-            
+            ProfilePicPath:""
         }
     }
 //todo: get restaurant's email on "visit" click and replace in params
@@ -50,7 +51,8 @@ class RestaurantTab extends React.Component {
                     description: response.data.description,
                     phoneNo: response.data.phoneNo,
                     address: response.data.address,
-                    timings: response.data.timings
+                    timings: response.data.timings,
+                    ProfilePicPath:response.data.ProfilePicPath,
                 });
             }
         });
@@ -62,9 +64,13 @@ class RestaurantTab extends React.Component {
     render() { 
         return (<React.Fragment>
             <div className="row">
-                <div className="col">
-                    
-                <Form>
+                
+                    {/* <Card>
+                    <Card.Img variant="top" src={this.state.ProfilePicPath} className="restaurantProfilePhoto" alt="Add profile picture" />
+                    <Card.ImgOverlay> */}
+                        
+                        <Col>
+                        <Form>
                             <Form.Group>
                                 <Row>
                                     <Col>
@@ -185,11 +191,13 @@ class RestaurantTab extends React.Component {
                             </Form.Group>
                             
                         </Form>
-                    
-                </div>
-                <div className="col">
-                    <img src={require("../images/photo.jpg").default} height="200" width="200" alt=""></img>
-                </div>
+                        {/* </Card.ImgOverlay>
+                    </Card> */}
+                    </Col>
+                    <Col>
+                    <img src={this.state.ProfilePicPath} className="restaurantProfilePhoto"  alt="Add profile picture"></img>
+                    </Col>
+                
             </div>
             {/* <CustomerDishes></CustomerDishes> */}
         </React.Fragment>);

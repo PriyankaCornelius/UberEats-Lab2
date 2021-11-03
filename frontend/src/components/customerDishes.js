@@ -37,16 +37,7 @@ class CustomerDishes extends Component {
             showDashboard: false,
             showNewOrderModal:false
         };
-        // addDishHandler = addDishHandler.bind(this);
-        // editDishHandler = editDishHandler.bind(this);
-        // dishNameChangeHandler = dishNameChangeHandler.bind(this);
-        // priceChangeHandler = priceChangeHandler.bind(this);
-        // categoryChangeHandler = categoryChangeHandler.bind(this);
-        // descriptionChangeHandler = descriptionChangeHandler.bind(this);
-        // ingredientsChangeHandler = ingredientsChangeHandler.bind(this);
-        // imageUrlChangeHandler = imageUrlChangeHandler.bind(this);
-        // submitAddDish = submitAddDish.bind(this);
-        // submitEditDish= submitEditDish.bind(this);
+        
     
     componentDidMount() {
         var data = { params: { RestaurantID: localStorage.getItem("r_id") } };
@@ -189,30 +180,10 @@ class CustomerDishes extends Component {
                 currentRestaurantID = {localStorage.getItem("r_id")}
             ></CreateNewOrder>)</div>
         }
-        // let renderDashboard=null;
-        // if (this.state.showDashboard === true) {
-        //     renderDashboard =<div>
-        //         <Redirect to={{
-        //             pathname: "Dashboard",
-        //             state: {
-        //                 cart: this.state.cart,
-        //                 orderTotal: this.state.orderTotal,
-        //                 // qtyIncrementHandler:this.qtyIncrementHandler,
-        //                 // qtyDecrementHandler:this.qtyDecrementHandler,
-        //                 // getTotalHandler:this.getTotalHandler,
-        //                 // checkoutHandler:this.checkoutHandler,
-        //                 // removeItemHandler:this.removeItemHandler,
-        //                 // history.pushState(this.getTotalHandler, '', 'Dashboard'),
-        //                 cartCount:this.state.cart.length
-        //             }
-                    
-        //         }}>
-        //         </Redirect>
-        //         </div>
-        // }
+        
         const data = this.state.dishes;
         console.log("data:", data);
-        console.log("proooooooooops",this.props.location)
+        // console.log("props",this.props.location)
         return (
             <div>
                 <Navbar bg="light" expand="lg">
@@ -221,11 +192,7 @@ class CustomerDishes extends Component {
                             <Link to="/Dashboard" className="btn btn-outline-success">Dashboard</Link>
                             
                         </Col>
-                        {/* <Col>
-                            <Button variant="outline-success" onClick={this.handleDashboardShow}>
-                            Dashboard
-                            </Button>{renderDashboard}
-                        </Col> */}
+                        
                     </Container>
                     </Navbar>
                 <Cart
@@ -262,9 +229,9 @@ class CustomerDishes extends Component {
                                     <Card.Text>
                                         Description : {d.description}
                                     </Card.Text>
-                                    <Card.Text>
+                                    {/* <Card.Text>
                                         Dish ID : {i}
-                                    </Card.Text>
+                                    </Card.Text> */}
                                 </Card.Body>
                                 <Card.Footer>
                                     <Button variant="success" onClick={() => this.addToCartHandler(d)}>Add to Cart</Button>

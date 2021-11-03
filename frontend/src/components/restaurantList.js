@@ -4,6 +4,7 @@ import { Card } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
+
 class RestaurantList extends React.Component {
     constructor(props) {
         super(props);
@@ -26,6 +27,8 @@ class RestaurantList extends React.Component {
             window.location.reload(true);
         })
     }
+
+    
     render() {
         
         return <div>
@@ -45,13 +48,14 @@ class RestaurantList extends React.Component {
                     
                         return (
                             
-                            <Col xs="3">
-                            <Card style={{ width: '15rem' }}>
+                            <Col xs="4">
+                            <Card style={{ width: '20rem',height: '30rem' }} className="text-black">
                                     <Card.Header as="h5">
                                     <Row>
                                         <Col>
                                             {d.Name}
                                         </Col>
+                                        
                                         <Col>
                                             <Button variant="outline-light" onClick={this.favouriteHandler.bind(this, d)}>
                                                     {this.props.fav || d.fav}
@@ -59,35 +63,30 @@ class RestaurantList extends React.Component {
                                         </Col>
                                     </Row>
                                     </Card.Header>
-                                <Card.Img variant="top" src={d.image} />
-                                <Card.Body>
-                                    <Card.Title>{d.Description}</Card.Title>
-                                    <Card.Text>
-                                        Location : {d.Location}
+                                    <Card.Img variant="top" src={d.ProfilePicPath} style={{ opacity: "0.8", width:"20rem", height:"20rem" }} />
+                                    <Card.ImgOverlay>
+                                   
+                                   <Card.Text className="bg-black" style={{ opacity: "0.8", marginTop: "270px",  color: "white" }}>
+                                       <small>  
+                                    {d.Description}
+                                   <br></br>
+                                    {d.Cuisine} • {d.Dietary}
+                                    <br></br>
+                                    {d.DeliveryMode} available
+                                    <br></br>
+                                    Open {d.Timings}
+                                    <br></br>
+                                    {d.Location} • {d.Email} • {d.PhoneNum}
+                                    </small>
                                     </Card.Text>
-                                    <Card.Text>
-                                        Cuisine : {d.Cuisine}
-                                    </Card.Text>
-                                    <Card.Text>
-                                        Delivery Mode : {d.DeliveryMode}
-                                        </Card.Text>
-                                    <Card.Text>
-                                        Dietary : {d.Dietary}
-                                    </Card.Text>
-                                    <Card.Text>
-                                        timings : {d.Timings}
-                                    </Card.Text>
-                                    <Card.Text>
-                                        email : {d.Email}
-                                    </Card.Text>
-                                    <Card.Text>
-                                        phoneNo : {d.PhoneNum}
-                                    </Card.Text>
-                                </Card.Body>
+                                    
+                                   
                                 <Card.Footer>
                                         <Button variant="success" onClick={() => this.props.visitHandler({d})}>Visit</Button>
                                         {this.props.redirectToRestaurantProfile}
                                 </Card.Footer>
+                                
+                                </Card.ImgOverlay>
                             </Card>
                             </Col>
                             

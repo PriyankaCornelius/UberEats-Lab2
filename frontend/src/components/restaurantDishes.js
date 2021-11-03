@@ -27,7 +27,7 @@ class Dishes extends Component {
             description:"",
             ingredients: "",
             category: "",
-            imageURL: "",
+            image: [],
             idDishes:"",
         };
         this.addDishHandler = this.addDishHandler.bind(this);
@@ -37,7 +37,7 @@ class Dishes extends Component {
         this.categoryChangeHandler = this.categoryChangeHandler.bind(this);
         this.descriptionChangeHandler = this.descriptionChangeHandler.bind(this);
         this.ingredientsChangeHandler = this.ingredientsChangeHandler.bind(this);
-        this.imageUrlChangeHandler = this.imageUrlChangeHandler.bind(this);
+        this.fileSelected = this.fileSelected.bind(this);
         this.submitAddDish = this.submitAddDish.bind(this);
         this.submitEditDish= this.submitEditDish.bind(this);
     }
@@ -56,40 +56,64 @@ class Dishes extends Component {
             description:d.description,
             ingredients: d.ingredients,
             category: d.category,
-            imageURL: d.Image,
+            image: d.image,
             idDishes: i,
         });
     };
     dishNameChangeHandler = (e) => {
         this.setState({
-            dishName: e.target.value,
+            dishName: e.target.value || this.state.dishName,
         });
     };
     priceChangeHandler = (e) => {
         this.setState({
-            price: e.target.value,
+            price: e.target.value || this.state.price,
         });
     };
     categoryChangeHandler = (e) => {
         this.setState({
-            category: e.target.value,
+            category: e.target.value || this.state.category,
+        }, () => {
+            console.log("$$$$$$$$$$$$$$$$$ categoryyyyyy", this.state.category)
         });
     };
     descriptionChangeHandler = (e) => {
         this.setState({
-            description: e.target.value,
+            description: e.target.value || this.state.description,
         });
     };
     ingredientsChangeHandler = (e) => {
         this.setState({
-            ingredients: e.target.value,
+            ingredients: e.target.value || this.state.ingredients,
         });
     };
-    imageUrlChangeHandler = (e) => {
-        this.setState({
-            imageURL: e.target.value,
+    fileSelected = e => {
+        e.preventDefault();
+        const image = e.target.files[0];
+        console.log("ee . target, ", e.target.files[0])
+        this.setState({ image: image || this.state.image}, () => {
+            console.log("fiiiillleee",this.state.image)
         });
-    };
+    }
+
+    // submit = event => {
+    //     event.preventDefault()
+    //     const image = this.state.image;
+    //     const formData = new FormData();
+    //     formData.append("image", image);
+    //     formData.append("RestaurantID", localStorage.getItem("r_id"));
+    //     console.log("formdata", formData.get('image'));
+        
+    //     const result = axios.post('http://localhost:5000/restaurant/dishImages', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+    //         .then((response) => {
+    //             console.log("Status Code : ", response.status, "and", response.data);
+    //             this.setState({
+    //                 image: response.data
+    //             })
+    //         })
+        
+        
+    //   }
     componentDidMount() {
         var data = { params: { RestaurantID: localStorage.getItem("r_id") } };
         axios.get("http://localhost:5000/restaurant/getRestaurantDishes", data).then((response) => {
@@ -116,25 +140,24 @@ class Dishes extends Component {
         var headers = new Headers();
         //prevent page from refresh
         e.preventDefault();
-        const data = {
-            //idRestaurants: +localStorage.getItem("r_id"),
-            RestaurantID: localStorage.getItem("r_id"),
-            dishName: this.state.dishName,
-            price: this.state.price,
-            description:this.state.description,
-            ingredients: this.state.ingredients,
-            category: this.state.category,
-            imageURL: this.state.imageURL,
-            idDishes:this.state.idDishes,
+        const image = this.state.image;
+        const formData = new FormData();
+        formData.append("image", image);
+        formData.append("RestaurantID", localStorage.getItem("r_id"));
+        formData.append("dishName", this.state.dishName);
+        formData.append("price", this.state.price);
+        formData.append("description", this.state.description);
+        formData.append("ingredients", this.state.ingredients);
+        formData.append("category", this.state.category);
+        formData.append("idDishes", this.state.idDishes);
 
-        };
         console.log("idDishes",this.state.idDishes)
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         //make a post request with the user data
         // this.props.signup(data);
         axios
-            .post("http://localhost:5000/restaurant/restaurantEditNewDish", data)
+            .post("http://localhost:5000/restaurant/restaurantEditNewDish",formData,{ headers: { 'Content-Type': 'multipart/form-data' } })
             .then((response) => {
                 console.log("Status Code : ", response.status);
                 if (response.status === 200) {
@@ -177,24 +200,23 @@ class Dishes extends Component {
         var headers = new Headers();
         //prevent page from refresh
         e.preventDefault();
-        const data = {
-            //idRestaurants: +localStorage.getItem("r_id"),
-            RestaurantID: localStorage.getItem("r_id"),
-            dishName: this.state.dishName,
-            price: this.state.price,
-            description:this.state.description,
-            ingredients: this.state.ingredients,
-            category: this.state.category,
-            imageURL: this.state.imageURL,
-            idDishes: this.state.idDishes
-        };
+        const image = this.state.image;
+        const formData = new FormData();
+        formData.append("image", image);
+        formData.append("RestaurantID", localStorage.getItem("r_id"));
+        formData.append("dishName", this.state.dishName);
+        formData.append("price", this.state.price);
+        formData.append("description", this.state.description);
+        formData.append("ingredients", this.state.ingredients);
+        formData.append("category", this.state.category);
+        formData.append("idDishes", this.state.idDishes);
         
+        console.log("dish add form data,", formData.get('image'));
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         //make a post request with the user data
         // this.props.signup(data);
-        axios
-            .post("http://localhost:5000/restaurant/restaurantAddNewDish", data)
+        axios.post("http://localhost:5000/restaurant/restaurantAddNewDish", formData,{ headers: { 'Content-Type': 'multipart/form-data' } })
             .then((response) => {
                 console.log("Status Code : ", response.status);
                 if (response.status === 200) {
@@ -214,7 +236,6 @@ class Dishes extends Component {
                     ingredients: "",
                     category: "",
                     idDishes:"",
-                
                 });
             });
 
@@ -254,9 +275,9 @@ class Dishes extends Component {
                             <Form.Control as="select" onChange={this.categoryChangeHandler}>
                                 <option value="Main Course">Main Course</option>
                                 <option value="Appetizer">Appetizer</option>
-                                <option value="Salads">Salads</option>
-                                <option value="Desserts">Desserts</option>
-                                <option value="Beverages">Beverages</option>
+                                <option value="Salad">Salad</option>
+                                <option value="Dessert">Dessert</option>
+                                <option value="Beverage">Beverage</option>
                             </Form.Control>
                         </Form.Group>
                         <Form.Group controlId="description">
@@ -268,8 +289,11 @@ class Dishes extends Component {
                             <Form.Control type="text" placeholder="Ingredients" onChange={this.ingredientsChangeHandler} />
                         </Form.Group>
                         <Form.Group controlId="formImageURL">
-                            <Form.Label>Image URL</Form.Label>
-                            <Form.Control type="text" placeholder="Image URL" onChange={this.imageUrlChangeHandler} />
+                            <Form.Label>Image</Form.Label>
+                            {/* <Form.Control type="file" accept="image/*" name="image" placeholder="Image URL" onChange={this.fileSelected} /> */}
+                            <input onChange={this.fileSelected} type="file" accept="image/*" name="image"></input>
+                            {/* <img src={this.state.image} className="profilePhoto" height="200" width="200" alt="Add profile picture"></img> */}
+                            {/* <Button type="submit" className='btn m-3' variant="outline-success">Update Profile Picture</Button> */}
                         </Form.Group>
                         <Button variant="success" type="submit">
                             Add
@@ -305,9 +329,9 @@ class Dishes extends Component {
                             <Form.Control as="select" onChange={this.categoryChangeHandler} defaultValue={this.state.category}>
                                 <option value="Main Course">Main Course</option>
                                 <option value="Appetizer">Appetizer</option>
-                                <option value="Salads">Salads</option>
-                                <option value="Desserts">Desserts</option>
-                                <option value="Beverages">Beverages</option>
+                                <option value="Salad">Salad</option>
+                                <option value="Dessert">Dessert</option>
+                                <option value="Beverage">Beverage</option>
                             </Form.Control>
                         </Form.Group>
                         <Form.Group controlId="description">
@@ -319,8 +343,11 @@ class Dishes extends Component {
                             <Form.Control type="text" placeholder="Ingredients" onChange={this.ingredientsChangeHandler} defaultValue={this.state.ingredients}/>
                         </Form.Group>
                         <Form.Group controlId="formImageURL">
-                            <Form.Label>Image URL</Form.Label>
-                            <Form.Control type="text" placeholder="Image URL" onChange={this.imageUrlChangeHandler} defaultValue={this.state.imageURL}/>
+                            <Form.Label>Image</Form.Label>
+                            {/* <Form.Control type="file" accept="image/*" name="image" placeholder="Image URL" onChange={this.fileSelected} /> */}
+                            <input onChange={this.fileSelected} type="file" accept="image/*" name="image"></input>
+                            {/* <img src={this.state.image} className="profilePhoto" height="200" width="200" alt="Add profile picture"></img> */}
+                            {/* <Button type="submit" className='btn m-3' variant="outline-success">Update Profile Picture</Button> */}
                         </Form.Group>
                         <Button variant="success" type="submit">
                             Edit
@@ -348,30 +375,31 @@ class Dishes extends Component {
                     <Container>
                     <Row>
                     {data !== [] ? data.map((d, i) => {
-                        
+
                          return ( 
                             <Col xs="3">
-                            <Card style={{ width: '20rem' }}>
-                                <Card.Header as="h5"> Category : {d.category}</Card.Header>
-                                <Card.Img variant="top" src={d.image} />
-                                <Card.Body>
-                                    <Card.Title>{d.dishName}</Card.Title>
-                                    <Card.Text>
-                                        Price : ${d.price}
-                                    </Card.Text>
-                                    <Card.Text>
-                                        Ingredients : {d.ingredients}
-                                    </Card.Text>
-                                    <Card.Text>
-                                        Description : {d.description}
-                                    </Card.Text>
-                                    <Card.Text>
-                                        Dish ID : {i}
-                                    </Card.Text>
-                                </Card.Body>
-                                <Card.Footer>
+                            <Card style={{ width: '20rem',height: '25rem' }} className="text-black">
+                                <Card.Header as="h5"> {d.dishName}</Card.Header>
+                                <Card.Img variant="top" src={d.image} alt="Dish image"/>
+                                <Card.ImgOverlay>
+                                   
+                                         <Card.Text className="bg-black" style={{ opacity: "0.8", marginTop: "220px", marginLeft: "50px", color: "white" }}>
+                                             <small>
+                                    {d.category} ~ <big>${d.price}</big>
+                                <br></br>
+                                             Ingredients : {d.ingredients}
+                                             <br></br>
+                                    
+                                             Description : {d.description}
+                                             <br></br>
+                                    
+                                        </small>
+                                         </Card.Text>
+                                         <Card.Footer>
                                     <Button variant="outline-success" onClick={() => this.editDishHandler(d,i)}>Edit</Button>
                                 </Card.Footer>
+                                </Card.ImgOverlay>
+                                
                             </Card>
                             </Col>
                          ) 
