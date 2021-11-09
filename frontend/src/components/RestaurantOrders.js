@@ -9,7 +9,8 @@ import { InputGroup } from 'react-bootstrap';
 import { Navbar } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-
+import Pagination from 'react-bootstrap/Pagination';
+import PageItem from 'react-bootstrap/PageItem';
 
 import axios from "axios";
 import Logout from './logout';
@@ -36,7 +37,10 @@ class RestaurantOrders extends React.Component {
             orderStatus: "",
             index: "",
             allOrders: "",
-            orderFilter:""
+            orderFilter: "",
+            orderCount: 5,
+            activePage: 1,
+            
         };
         // this.onChange=this.onChange.bind(this);
         // this.cancelOrder=this.cancelOrder.bind(this);
@@ -194,15 +198,59 @@ class RestaurantOrders extends React.Component {
         console.log("print", this.state.orderFilter);
     }
 
+    orderCountHandler = e => {
+        e.preventDefault();
+        this.setState({
+            orderCount: e.target.textContent
+        })
+    }
+
+    activePageChangeHandler = e => {
+        e.preventDefault();
+        console.log("e.target.text",e.target.text)
+        this.setState({
+            activePage: e.target.text,
+            
+        })
+
+       
+    }
+
     render() {
         
-        // if((order.orderStatus)==="Delivery"){
-                
-        // }
+        
+        // let active = this.state.activePage;
+        
+let items = [];
+        let itemcount = this.state.orderCount;
+        let pagediv = this.state.orders.length / itemcount;
+        let pagecount = (this.state.orders.length % itemcount !== 0) ? (++pagediv) : pagediv;
+        
+       
+for (let number = 1; number <= pagecount; number++) {
+  items.push(
+      <Pagination.Item key={number} active={number === this.state.activePage} onClick={this.activePageChangeHandler}>
+      {number}
+    </Pagination.Item>,
+  );
+}
 
+const paginationBasic = (
+  <div>
+        <Pagination >
+            
+            {items}
+        </Pagination>
+    <br />
+  </div>
+);
+
+        var paginatedOrders = this.state.orders;
+        var orderframe = (itemcount * this.state.activePage) + 1;
+        paginatedOrders = paginatedOrders.slice(orderframe - itemcount, orderframe);
         return <div>
             
-            {console.log("this.state.orders", this.state.orders)}
+           
             <div>
             <Navbar bg="light" expand="lg">
                         <Container>
@@ -232,8 +280,25 @@ class RestaurantOrders extends React.Component {
             <h1>Past Orders</h1>
             {this.state.redirectVar}
             <div>
+            <div>
+                    <InputGroup className="mb-3">
+                    <span className="block-example border border-dark">
+                        <Container textAlign="left">
+                        
+                        <label>Show</label>
+                <DropdownButton id="dropdown-basic-button" placeholder={this.state.orderCount} title={this.state.orderCount} value={this.state.orderCount} variant="light">
+                    <Dropdown.Item as="button" variant="outline-dark"><div onClick={(e) => this.orderCountHandler(e)}>2</div></Dropdown.Item>
+                    <Dropdown.Item as="button" variant="outline-dark"><div onClick={(e) => this.orderCountHandler(e)}>5</div></Dropdown.Item>
+                    <Dropdown.Item as="button" variant="outline-dark"><div onClick={(e) => this.orderCountHandler(e)}>10</div></Dropdown.Item>
+                </DropdownButton>
+                <label>entries</label>
+                </Container></span>
+            </InputGroup>
+            </div>
             <div className="container shadow" style={{textAlign: "center", width:1200}}>
-                    {this.state.orders.length !== 0 ? this.state.orders.map((order, index) => {
+                    {this.state.orders.length !== 0 ?
+                        
+                        paginatedOrders.map((order, index) => {
                         return (
                             <div className="mb-3">
                             <Card>
@@ -289,7 +354,12 @@ class RestaurantOrders extends React.Component {
                             </Card>
                           </div>
                     )
-                    }): <Card>No previous orders found</Card>}
+                    }) : <Card>No previous orders found</Card>}
+                    <div class="overflow-auto">
+                        {
+                            paginationBasic
+                        }
+                    </div>
             </div>
             </div>
 

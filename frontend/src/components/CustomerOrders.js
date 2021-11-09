@@ -8,6 +8,8 @@ import { Link } from 'react-router-dom';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { InputGroup } from 'react-bootstrap';
+import Pagination from 'react-bootstrap/Pagination';
+import PageItem from 'react-bootstrap/PageItem';
 import axios from "axios";
 import OrderReceipt from './orderReceipt';
 import Logout from './logout';
@@ -30,7 +32,8 @@ class CustomerOrders extends React.Component {
             orderFilter: "",
             allOrders: "",
             orderReceipt: "",
-            
+            orderCount: 5,
+            activePage: 1,
             dishNames: [],
             dishPrice: [],
             
@@ -143,14 +146,57 @@ class CustomerOrders extends React.Component {
                     console.log("updateOrderStatus failed for restaurant's end");
                 }
             })
-        //window.location.reload();
+       
     }
-        
+    orderCountHandler = e => {
+        e.preventDefault();
+        this.setState({
+            orderCount: e.target.textContent
+        })
+    }
+
+    activePageChangeHandler = e => {
+        e.preventDefault();
+        console.log("e.target.text",e.target.text)
+        this.setState({
+            activePage: e.target.text,
+            
+        })
+
+       
+    }    
     render() {
+        let items = [];
+        let itemcount = this.state.orderCount;
+        let pagediv = this.state.orders.length / itemcount;
+        let pagecount = (this.state.orders.length % itemcount !== 0) ? (++pagediv) : pagediv;
+        
+            
+        for (let number = 1; number <= pagecount; number++) {
+        items.push(
+            <Pagination.Item key={number} active={number === this.state.activePage} onClick={this.activePageChangeHandler}>
+            {number}
+            </Pagination.Item>,
+        );
+        }
+
+        const paginationBasic = (
+        <div>
+                <Pagination >
+                    
+                    {items}
+                </Pagination>
+            <br />
+        </div>
+        );
+
+        var paginatedOrders = this.state.orders;
+        var orderframe = (itemcount * this.state.activePage) + 1;
+        paginatedOrders = paginatedOrders.slice(orderframe - itemcount, orderframe);
         
         return <div>
             {this.state.orderReceipt}
-            {console.log("this.state.orders",this.state.orders)}
+
             <div>
             <Navbar bg="light" expand="lg">
                         <Container>
@@ -189,8 +235,24 @@ class CustomerOrders extends React.Component {
             </div>
             <h1>Past Orders</h1>
             <div>
+            <div>
+            <InputGroup className="mb-3">
+                <span className="block-example border border-dark">
+                    <Container textAlign="left">
+                        
+                    <label>Show</label>
+                    <DropdownButton id="dropdown-basic-button" placeholder={this.state.orderCount} title={this.state.orderCount} value={this.state.orderCount} variant="light">
+                        <Dropdown.Item as="button" variant="outline-dark"><div onClick={(e) => this.orderCountHandler(e)}>2</div></Dropdown.Item>
+                        <Dropdown.Item as="button" variant="outline-dark"><div onClick={(e) => this.orderCountHandler(e)}>5</div></Dropdown.Item>
+                        <Dropdown.Item as="button" variant="outline-dark"><div onClick={(e) => this.orderCountHandler(e)}>10</div></Dropdown.Item>
+                    </DropdownButton>
+                    <label>entries</label>
+                    </Container>
+                </span>
+            </InputGroup>
+            </div>
             <div className="container shadow" style={{textAlign: "center", width:1200}}>
-                    {this.state.orders.length !== 0 ? this.state.orders.map((order, index) => {
+                    {this.state.orders.length !== 0 ? paginatedOrders.map((order, index) => {
                         if (order.orderStatus === "Order Received") {
                             var showCancelButton=(<Button variant="outline-success" onClick={()=>this.orderCancelHandler(order, order._id, order.RestaurantID)}>Cancel Order</Button>)
                         }
@@ -232,7 +294,12 @@ class CustomerOrders extends React.Component {
                             </Card>
                           </div>
                     )
-                    }): <Card>No previous orders found</Card>}
+                    }) : <Card>No previous orders found</Card>}
+                    <div class="overflow-auto">
+                        {
+                            paginationBasic
+                        }
+                    </div>
             </div>
             </div>
         </div>;
