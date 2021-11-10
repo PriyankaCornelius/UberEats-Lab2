@@ -19,7 +19,8 @@ import { Navbar } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import Logout from './logout';
 import axios from 'axios';
-import { useState } from 'react'
+import { connect } from "react-redux";
+import { setName, setBirthdate, setAddress,setLocation,setCity,setstate,setCountry } from "../redux/slices/customerProfile"
 class CustomerProfile extends React.Component {
     constructor(props) {
         super(props);
@@ -57,6 +58,14 @@ class CustomerProfile extends React.Component {
                         country: response.data.country || "India",
                         ProfilePicPath: response.data.ProfilePicPath,
                     });
+                    this.props.setName(this.state.name);
+                    this.props.setBirthdate(this.state.birthdate);
+                    this.props.setAddress(this.state.address);
+                    this.props.setLocation(this.state.location);
+                    this.props.setCity(this.state.city);
+                    this.props.setstate(this.state.State);
+                    this.props.setCountry(this.state.country);
+                    
                 }
         });
     }
@@ -303,5 +312,5 @@ class CustomerProfile extends React.Component {
         </div>;
     }
 }
- 
-export default CustomerProfile;
+const mapDispatchToProps = { setName, setBirthdate, setAddress,setLocation,setCity,setstate,setCountry };
+export default connect(null, mapDispatchToProps)(CustomerProfile);

@@ -50,7 +50,7 @@ class Login extends React.Component {
       this.setState({
         username: e.target.value,
       });
-      console.log("email -----------",e.target.value);
+      console.log("email ",e.target.value);
     };
     
     //password change handler to update state variable with the text entered by the user
@@ -75,7 +75,7 @@ class Login extends React.Component {
       if (this.state.persona === "Customer") {
         //make a post request with the user data
         axios
-          .post("http://localhost:5000/customer/customerLogin", data)
+          .post("http://localhost:5000/customerLogin", data)
         .then((response) => {
           console.log("Status Code : ", response.status);
           console.log(response.data);

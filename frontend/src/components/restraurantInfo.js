@@ -5,6 +5,8 @@ import axios from "axios";
 import Button from 'react-bootstrap/Button';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { connect } from "react-redux";
+import { setName, setLocation, setCuisine, setDeliveryMode,setDietary,setDescription ,setPhoneNo,setEmail,setAddress,setTimings } from "../redux/slices/restaurantProfile"
 //const axios = require('axios');
 class RestaurantInfo extends React.Component {
 
@@ -52,6 +54,16 @@ class RestaurantInfo extends React.Component {
                         timings: response.data.timings,
                         ProfilePicPath: response.data.ProfilePicPath,
                     });
+                    this.props.setName(this.state.name);
+                    this.props.setLocation(this.state.location);
+                    this.props.setCuisine(this.state.cuisine);
+                    this.props.setDeliveryMode(this.state.deliveryMode);
+                    this.props.setDietary(this.state.dietary);
+                    this.props.setDescription(this.state.description);
+                    this.props.setPhoneNo(this.state.phoneNo);
+                    this.props.setEmail(this.state.email);
+                    this.props.setAddress(this.state.address);
+                    this.props.setTimings(this.state.timings);
                 }
             });
     }
@@ -336,5 +348,7 @@ class RestaurantInfo extends React.Component {
         </React.Fragment>);
     }
 }
- 
-export default RestaurantInfo;
+
+const mapDispatchToProps = { setName, setLocation, setCuisine, setDeliveryMode,setDietary,setDescription ,setPhoneNo,setEmail,setAddress,setTimings};
+export default connect(null, mapDispatchToProps)(RestaurantInfo);
+
