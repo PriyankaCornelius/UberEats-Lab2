@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import {Redirect} from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from "axios";
+import jwt_decode from "jwt-decode";
 import { connect } from "react-redux";
 import { setUsername, setAuthFlag, setPersona } from "../redux/slices/login"
 //const axios = require('axios');
@@ -75,42 +76,54 @@ class Login extends React.Component {
       if (this.state.persona === "Customer") {
         //make a post request with the user data
         axios
-          .post("http://localhost:5000/customerLogin", data)
+          .post("http://localhost:5000/customer/customerLogin", data)
         .then((response) => {
           console.log("Status Code : ", response.status);
           console.log(response.data);
           if (response.status === 200) {
-             localStorage.setItem("c_id", response.data.CustomerID);
-            // localStorage.setItem("persona", this.state.persona);  
-            localStorage.setItem('customerEmail', this.state.username);
-            localStorage.setItem('persona', this.state.persona);
             this.setState({
+              token: response.data,
               authFlag: true,
               idStatus: ( 
                 <Redirect to="/Dashboard"></Redirect>
             )
             });
-            //this.props.setCustomerID(response.data.idCustomers);
-            // console.log(" props for redux", response.data.idCustomers)
-            this.props.setPersona(this.state.persona);
-            this.props.setUsername(this.state.username);
-            console.log(" props for redux", this.state.username)
-            this.props.setAuthFlag(true);
-            //window.location.reload();
+            console.log("length", this.state.token.length);
+            if (this.state.token.length > 0) {
+              localStorage.setItem("token", this.state.token);
+
+              var decoded = jwt_decode(this.state.token.split(' ')[1]);
+              console.log("decoded:", decoded);
+              localStorage.setItem("c_id", decoded._id);
+              localStorage.setItem("persona", this.state.persona);
+              this.props.setPersona(this.state.persona);
+              // console.log(response.data.idCustomers);
+              this.setState({
+                idCustomers: decoded._id,
+                
+              });
+              
+              //   console.log(response.data.password);
+
+              this.props.setCustomerID(decoded._id);
+              this.props.setUsername(this.state.username);
+              this.props.setAuthFlag(true);
+              //  window.location.reload();
+            }
 
           } else {
             this.setState({
               authFlag: false,
             });
             this.setState({
-              idStatus: (
+              invalidCredentials: (
                 <p>
                   Your login credentials could not be verified, please try again.
                 </p>
               ),
             });
           }
-          console.log("success" + this.state.authFlag);
+          console.log("success:" + this.state.authFlag);
         })
         .catch((e) => {
           debugger;
@@ -119,8 +132,10 @@ class Login extends React.Component {
     }
     else {
       //make a post request with the user data
+        
+        
       axios
-        .post("http://localhost:5000/restaurant/restaurantLogin", data)
+        .post("http://localhost:5000/restaurantLogin", data)
         .then((response) => {
           console.log("Status Code : ", response.status);
           console.log(response.data);

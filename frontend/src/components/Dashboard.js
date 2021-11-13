@@ -46,7 +46,7 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        var data = { params: { email: localStorage.getItem("customerEmail") } };
+        var data = { params: { CustomerID: localStorage.getItem("CustomerID") } };
         axios.get("http://localhost:5000/customer/getCustomerLocation", data).then((response) => {
             console.log("response: ", response);
             console.log("customer location: ", response.data.Location);

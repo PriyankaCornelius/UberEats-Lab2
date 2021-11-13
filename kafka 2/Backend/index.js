@@ -7,6 +7,12 @@ var kafka = require('./kafka/client');
 //use cors to allow cross origin resource sharing
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(bodyParser.json());
+const jwt = require('jsonwebtoken');
+const { secret } = require('./kafka/Utils/config');
+//const Users = require('../Models/UserModel');
+const { auth } = require("./kafka/Utils/passport");
+const { checkAuth } = require("./kafka/Utils/passport");
+// let Customer = require('../models/customer.model');
 
 //Allow Access Control
 app.use(function(req, res, next) {
@@ -18,7 +24,23 @@ app.use(function(req, res, next) {
     next();
   });
 
-
+  var options = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    // poolSize: 500,
+    // bufferMaxEntries'/: 0
+  };
+  
+const { mongoDB } = require('./kafka/Utils/config');
+const mongoose = require('mongoose');
+mongoose.connect(mongoDB, options, (err, res) => {
+    if (err) {
+      console.log(err);
+      console.log(`MongoDB Connection Failed`);
+    } else {
+      console.log(`MongoDB Connected`);
+    }
+  });
 
 //Route to get All Books when user visits the Home Page
 /*app.get('/books', function(req,res){   
@@ -29,6 +51,11 @@ app.use(function(req, res, next) {
     
 });
 */
+
+const customerRouter = require('./routes/customer');
+const restaurantRouter = require('./routes/restaurant');
+app.use('/customer', customerRouter);
+app.use('/restaurant', restaurantRouter);
 
 //Route to handle Post Request Call for Customer Login
 app.post("/customerLogin", function (req, res) {
@@ -45,10 +72,10 @@ app.post("/customerLogin", function (req, res) {
       } else {
           console.log("Inside else customerLogin");
           const payload = { _id: results.data.idCustomers};
-          // const token = jwt.sign(payload, secret, {
-          //     expiresIn: 1008000
-          // });
-        var token = "hitoken";
+          const token = jwt.sign(payload, secret, {
+              expiresIn: 1008000
+          });
+          console.log("JWT TOKEN CREATED : ", token);
           console.log("%%%%%%%%4444:",results.data.idCustomers);
           if (results.status === 200) {
               res.status(200).end("JWT " + token);

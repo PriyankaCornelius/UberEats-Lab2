@@ -1,11 +1,3 @@
-// Display complete profile of a customer 
-// (basic details, favourites, about, profile picture)
-// 2.Upload profile picture
-// 
-//     country, nickname)
-// 4.Update Contact Information(email id, phone number)
-// 5.Thecountryshouldbeadropdownwiththelistofcountriestoselectfromandshouldnotbe entered manually
-//     .Note:YourprofilepageneednotbethesameasUberEatsprofileastheyhavelittleinformation available.
 
 import React, { Component } from 'react';
 import { Row, Col } from 'react-bootstrap';
