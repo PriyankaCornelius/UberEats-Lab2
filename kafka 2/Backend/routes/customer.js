@@ -258,9 +258,9 @@ router.route("/submitOrder").post((req, res)=> {
       } else {
         console.log("order placed Success but diffrent status", results.status);
         res.status(results.status).send(results.message);
+      }
     }
-    }
-});
+  });
 });
 
 //Route to list of orders by restaurants for a customer

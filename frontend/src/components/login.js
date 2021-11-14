@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { connect } from "react-redux";
-import { setUsername, setAuthFlag, setPersona } from "../redux/slices/login"
+import { setUsername, setAuthFlag, setPersona, setCustomerID } from "../redux/slices/login"
 //const axios = require('axios');
 
 
@@ -24,7 +24,8 @@ class Login extends React.Component {
             authFlag: false,
             idStatus: "",
             idCustomers: "",
-            persona: ""
+            persona: "",
+            CustomerID:""
         }
         this.usernameChangeHandler = this.usernameChangeHandler.bind(this);
         this.passwordChangeHandler = this.passwordChangeHandler.bind(this);
@@ -94,6 +95,7 @@ class Login extends React.Component {
               console.log("decoded:", decoded);
               localStorage.setItem("c_id", decoded._id);
               localStorage.setItem("persona", this.state.persona);
+              localStorage.setItem("customerEmail", this.state.email);
               this.props.setPersona(this.state.persona);
               // console.log(response.data.idCustomers);
               this.setState({
@@ -105,7 +107,7 @@ class Login extends React.Component {
               
               //   console.log(response.data.password);
 
-              this.props.setCustomerID(decoded._id);
+              this.props.setCustomerID(this.state.CustomerID);
               this.props.setUsername(this.state.username);
               this.props.setAuthFlag(true);
               //  window.location.reload();
@@ -135,7 +137,7 @@ class Login extends React.Component {
         
         
       axios
-        .post("http://localhost:5000/restaurantLogin", data)
+        .post("http://localhost:5000/restaurant/restaurantLogin", data)
         .then((response) => {
           console.log("Status Code : ", response.status);
           console.log(response.data);
@@ -244,7 +246,7 @@ class Login extends React.Component {
         )
     }
 } 
-const mapDispatchToProps = { setUsername, setAuthFlag, setPersona };
+const mapDispatchToProps = { setUsername, setAuthFlag, setPersona, setCustomerID };
 
 //export Login Component
 export default connect(null, mapDispatchToProps)(Login);

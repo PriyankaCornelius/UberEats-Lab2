@@ -12,7 +12,8 @@ function handle_request(msg, callback){
         orderTotal: msg.orderTotal,
         items:msg.finalorder,
         RestaurantID: msg.RestaurantID,
-        instruction:msg.instruction
+        instruction:msg.instruction,
+        RestaurantVisiting:msg.RestaurantVisiting
       };
     
       Customers.findByIdAndUpdate(msg.CustomerID, { $push:{customerOrders: newOrder} },{new: true}, (error, order) => {
@@ -23,7 +24,8 @@ function handle_request(msg, callback){
           callback(null, res);
         }
         if (order) {
-          // console.log("****Order Placed at customer***", order.customerOrders.at(-1).id);
+          console.log("****Order Placed at customer***", order.customerOrders.at(-1).id);
+          res.data = order.customerOrders.at(-1).id;
           res.message = 'order placed';
           res.status = 200;
           callback(null, res);

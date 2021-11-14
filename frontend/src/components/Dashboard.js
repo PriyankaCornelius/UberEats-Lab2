@@ -183,6 +183,7 @@ class Dashboard extends React.Component {
             if(this.state.cart.length===0)
                 localStorage.setItem("cart_restaurant", d.d._id);
             localStorage.setItem("r_id", d.d._id);
+            localStorage.setItem("restaurantVisiting", d.d.Name);
             this.setState({
                 redirectToRestaurantProfile: <div>
                     <Redirect to={{

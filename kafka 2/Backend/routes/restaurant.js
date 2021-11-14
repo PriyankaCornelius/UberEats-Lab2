@@ -388,7 +388,7 @@ router.post("/restaurantEditNewDish",upload.single("image"),async (req, res) =>{
 
 //Route to place order by customer 
 router.route("/submitOrder").post((req, res)=> {
-  console.log("Inside place order by customer  section", req.body.finalorder);
+  console.log("Inside place order by restaurant  section", req.body.finalorder);
   //var date = new Date(dateStr);  // dateStr you get from mongodb
 
   var newOrder = {

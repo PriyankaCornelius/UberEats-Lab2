@@ -261,7 +261,7 @@ class CustomerOrders extends React.Component {
                             <Card>
                                 <Row>
                                     <Col>
-                                        {order.restaurantName}
+                                        {order.RestaurantVisiting}
                                     </Col>
                                     <Col>
                                     <small style={{color:"grey"}}>Status : </small>

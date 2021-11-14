@@ -142,6 +142,9 @@ class RestaurantOrders extends React.Component {
                             console.log(response.data);
                             if (response.status === 200) {
                                 console.log("updateOrderStatus successful");
+                               
+                                    window.location.reload();
+                             
                             }
                             else {
                                 console.log("updateOrderStatus failed for customer's end");
@@ -190,12 +193,13 @@ class RestaurantOrders extends React.Component {
                 if (this.state.orderFilter === "All Orders") {
                     this.setState({
                         orders: this.state.allOrders
-                    });     
+                    });
                 }
                 console.log("printfinal", filteredValues);
             }
         });
         console.log("print", this.state.orderFilter);
+        
     }
 
     orderCountHandler = e => {
@@ -316,6 +320,7 @@ const paginationBasic = (
                                         <DropdownButton id="dropdown-basic-button" placeholder="Cuisine" title={order.orderStatus || "Change order status"} value={order.orderStatus} variant="outline-success">
                                             <Dropdown.Item as="button" variant="outline-dark"><div onClick={(e) => this.orderStatusChangeHandler(e)}>Order Received</div></Dropdown.Item>
                                             <Dropdown.Item as="button" variant="outline-dark"><div onClick={(e) => this.orderStatusChangeHandler(e)}>Preparing</div></Dropdown.Item>
+                                            <Dropdown.Item as="button" variant="outline-dark"><div onClick={(e) => this.orderStatusChangeHandler(e)}>Order Cancelled</div></Dropdown.Item>
                                             {this.state.displayDropdown}
                                         </DropdownButton>
                                     </InputGroup>

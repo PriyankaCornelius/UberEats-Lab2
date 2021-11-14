@@ -48,6 +48,7 @@ class PlaceOrder extends React.Component {
         const data = {
             CustomerID: localStorage.getItem("c_id"),
             RestaurantID: localStorage.getItem("r_id"),
+            RestaurantVisiting: localStorage.getItem("restaurantVisiting"),
             customerEmail:localStorage.getItem("customerEmail"),
             deliveryMode: this.state.deliveryMode,
             deliveryAddress: this.state.deliveryAddress,
@@ -62,11 +63,11 @@ class PlaceOrder extends React.Component {
             console.log("Status Code : ", response.status);
             if (response.status === 200) {
                 window.alert("Order Placed");
-                console.log("order placed is", response.data.customerOrders);
-                var latestOrderId = response.data.customerOrders.at(-1)._id;
+                console.log("order placed is", response.data);
+                // var latestOrderId = response.data.customerOrders.at(-1)._id;
                 
-                console.log("***********order placed ID", latestOrderId);
-                data['_id'] = latestOrderId;
+                console.log("***********order placed ID", response.data);
+                data['_id'] = response.data;
                 axios.post("http://localhost:5000/restaurant/submitOrder", data)
                     .then((response) => {
                         console.log("Status Code : ", response.status);

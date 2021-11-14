@@ -49,6 +49,10 @@ var customerProfile = new Schema({
         instruction: {
             type: String,
             required: true
+        },
+        RestaurantVisiting: {
+            type: String,
+            required: true
         }
     }]
 },
