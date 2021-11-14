@@ -93,7 +93,7 @@ class Signup extends Component {
         .then((response) => {
             console.log("Status Code : ", response.status);
             if (response.status === 200) {
-                localStorage.setItem("c_id", response.data.CustomerID);
+                // localStorage.setItem("c_id", response.data.CustomerID);
                 localStorage.setItem('customerEmail', this.state.email);
                 localStorage.setItem('persona',this.state.persona);
                 this.setState({

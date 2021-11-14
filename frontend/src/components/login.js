@@ -84,9 +84,7 @@ class Login extends React.Component {
             this.setState({
               token: response.data,
               authFlag: true,
-              idStatus: ( 
-                <Redirect to="/Dashboard"></Redirect>
-            )
+              
             });
             console.log("length", this.state.token.length);
             if (this.state.token.length > 0) {
@@ -99,8 +97,10 @@ class Login extends React.Component {
               this.props.setPersona(this.state.persona);
               // console.log(response.data.idCustomers);
               this.setState({
-                idCustomers: decoded._id,
-                
+                CustomerID: decoded._id,
+                idStatus: ( 
+                  <Redirect to="/Dashboard"></Redirect>
+              )
               });
               
               //   console.log(response.data.password);

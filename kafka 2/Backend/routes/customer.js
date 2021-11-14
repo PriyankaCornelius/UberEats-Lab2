@@ -96,149 +96,94 @@ router.route('/customerLogin').post((req, res) =>{
 
 //Route to handle Post Request Call for Customer SignUp
 router.route('/customerSignUp').post((req, res) =>{
-  console.log("Inside SignUp Request");
-  console.log("Req Body : ", req.body);
-  var email = req.body.email;
-  var name = req.body.name;
-  
-  async function hashPassword(password) {
-    // const salt = await bcrypt.genSalt(10);
-    // const hash = await bcrypt.hash(password, salt);
-    console.log("hash:", hash);
-    return hash;
-  }
-
-  hashPassword(req.body.password).then((customerPassword) => {
-    console.log("after Hash:", customerPassword);
-    var CustomerProfile = new Customer({
-      Name: name,
-      Email: email,
-      Password: customerPassword
+  console.log("Inside customer SignUp Request");
+    console.log("Req Body : ", req.body);
+    kafka.make_request('customerSignup', req.body, function (err, results) {
+        console.log(results);
+        if (err) {
+            console.log("Inside err customer SignUp");
+            res.writeHead(205, {
+                "Content-Type": "text/plain",
+            });
+            res.end("Unsuccessful Signup");
+        } else {
+          
+            console.log("Inside else customer SignUp");
+            res.status(results.status).send(results.message);
+        }
     });
-
-    Customer.findOne({ Email: email }, (error, profile) => {
-      if (error) {
-        res.writeHead(205, {
-          "Content-Type": "text/plain",
-        });
-        res.end();
-      }
-      if (profile) {
-        res.writeHead(205, {
-          'Content-Type': 'text/plain'
-        })
-        res.end("Customer Email ID already exists");
-      }
-      else {
-        CustomerProfile.save((error, data) => {
-          if (error) {
-            res.writeHead(500, {
-              'Content-Type': 'text/plain'
-            })
-            res.end();
-          }
-          else {
-            console.log("Customer Profile Created with id:", data.id);
-            resjson = {
-              CustomerID: data.id.toString(),
-            };
-            res.status(200).send(resjson);
-          }
-        });
-      }
-    });
-  });
-
 });
 
 //get customer profile
 router.route("/getCustomerProfile").get( (req, res)=> {
-  console.log(req.query.CustomerID);
-  var CustomerID = req.query.CustomerID;
-  console.log("CustomerID is" ,CustomerID);
-  
-  Customer.findById(CustomerID, (err, result) =>{
-    if (err) {
-          console.log('SQL Error:', err);
-              res.writeHead(205, {
+  console.log("Inside Customer profile section");
+    kafka.make_request('getCustomerProfile', req.query, function (err, results) {
+        console.log(results);
+        if (err) {
+            console.log("Inside err Customer Profile get");
+            res.writeHead(205, {
                 "Content-Type": "text/plain",
-              });
-              res.end("Fetch data failed");
-    }
-    else {
-      console.log(result);
-      // var key = result.ProfilePicPath;
-      // const readStream = getFileStream(key);
-
-      let resjson = {
-              name: result.Name,
-              birthdate: result.DOB,
-              address:result.Address,
-              location: result.Location,
-              city: result.City,
-              State: result.State,
-              country: result.Country,
-              ProfilePicPath: result.ProfilePicPath
-            };
-      console.log(resjson);
-      res.status(200).send(resjson);
-    }
-  });
-})
+            });
+            res.end("Unsuccessful Profile get");
+        } else {
+          console.log("Inside result Customer Profile get");
+          console.log("result customer profile!", results.data);
+            if (results.status === 200) {
+                res.status(results.status).send(results.data);
+            } else {
+                res.status(results.status).send(results.message);
+                console.log("Customer Profile Success");
+            }
+        }
+    });
+});
 
 //update customer Profile
 router.route("/updateCustomerProfile").post( (req, res) =>{
-  console.log("Inside customer profile update page");
-  console.log(req.body.CustomerID);
-  var CustomerID = req.body.CustomerID;
-  //var sql_update = "UPDATE customers SET name=? ,DOB=? ,address=?,location=?, city=? ,State=? ,country=? WHERE email=?";  var name = req.body.name;
-  var name = req.body.name;
-  var birthdate = req.body.birthdate;
-  var location = req.body.location;
-  var address=req.body.address;
-  var city = req.body.city;
-  var State = req.body.State;
-  var country = req.body.country;
-  //var sql_insert = "INSERT INTO address (customerEmail,address) values (?,?)";
-
-  Customer.findByIdAndUpdate(CustomerID, {Name: name, DOB: birthdate, Address: address, Location: location, City: city, State: State, Country: country },{$upsert:true}, (err, result) => {
-    if(err) {
-      console.log('SQL Error:', err);
-      res.writeHead(205, {
-        "Content-Type": "text/plain",
-      });
-      res.end("Update customer profile failed mongo ERROR");
-    }
-    else {
-      console.log("Update successfull!");
-      console.log("result: ",result);
-            res.writeHead(200, {
-              "Content-Type": "text/plain",
+  console.log("Inside Update customer profile section");
+    console.log(req.body);
+    kafka.make_request('updateCustomerProfile', req.body, function (err, results) {
+        console.log(results);
+        if (err) {
+            console.log("Inside err update CustomerProfile ");
+            res.writeHead(205, {
+                "Content-Type": "text/plain",
             });
-            res.end("Update Successful");
-          }
-  });
+            res.end("Unsuccessful Update Customer Profile");
+        } else {
+            console.log("Inside else update CustomerProfile ");
+           
+                res.status(results.status).send(results.message);
+        }
+    });
 });
+
 
 //Route to get customer location
 router.route("/getCustomerLocation").get((req, res) =>{
   console.log("Inside get-Customer-Location for customer dashboard section");
   //var idRestaurants = req.query.idRestaurants;
-  var CustomerID = req.query.CustomerID;
   
-  Customer.findOne( { CustomerID: CustomerID }, function (err, result) {
+  kafka.make_request('getCustomerLocation', req.query, function (err, results) {
+    // console.log(results);
     if (err) {
-      res.writeHead(205, {
-        'Content-Type': 'text/plain'
-      })
-      res.end("Unsuccessful fetching customer location");
+        console.log("Inside err Customer Profile get");
+        res.writeHead(205, {
+            "Content-Type": "text/plain",
+        });
+        res.end("Unsuccessful Profile get");
+    } else {
+      console.log("Inside result Customer location get");
+      console.log("location customer @@@@@@@", results.data);
+        if (results.status === 200) {
+            res.status(results.status).send(results.data);
+        } else {
+            res.status(results.status).send(results.message);
+            console.log("Customer Profile Success");
+        }
     }
-    else {
-      console.log("customer location: ",result.Location);
-      res.status(200).send(result);
-    }
-  })
-})
+});
+});
 
 //Route to get customer's favourite restaurants
 router.route("/getFavouriteRestaurants").get((req, res)=> {
@@ -250,7 +195,7 @@ router.route("/getFavouriteRestaurants").get((req, res)=> {
       res.status(205).send("Unsuccessful To update details");
     }
     else {
-      console.log("favourite restaurants", result.favouriteRestaurants)
+      console.log("favourite restaurants", result.data)
       res.status(200).send(result);
     }
   });
@@ -298,34 +243,24 @@ router.route("/updateFavouriteRestaurants").post( (req, res)=> {
 //Route to place order by customer 
 router.route("/submitOrder").post((req, res)=> {
   console.log("Inside place order by customer section", req.body.finalorder);
-  //var date = new Date(dateStr);  // dateStr you get from mongodb
-
-  var newOrder = {
-    // _id: new ObjectID(),
-    deliveryMode:req.body.deliveryMode,
-    orderStatus:"Order Received",
-    date: Date.now(),
-    deliveryAddress: req.body.deliveryAddress,
-    orderTotal: req.body.orderTotal,
-    items:req.body.finalorder,
-    RestaurantID: req.body.RestaurantID,
-    instruction:req.body.instruction
-  };
-
-  Customer.findByIdAndUpdate(req.body.CustomerID, { $push:{customerOrders: newOrder} },{new: true}, (error, order) => {
-    if (error) {
-      res.writeHead(205, {
-        "Content-Type": "text/plain",
-      });
-      console.log(error);
-      res.end();
+  kafka.make_request('placeOrder', req.body, function (err, results) {
+    console.log("results",results);
+    if (err) {
+        console.log("Inside err customer SignUp");
+        res.writeHead(205, {
+            "Content-Type": "text/plain",
+        });
+        res.end("Unsuccessful Signup");
+    } else {
+      if (results.status === 200) {
+        console.log("order placed");
+        res.status(results.status).send(results.data);
+      } else {
+        console.log("order placed Success but diffrent status", results.status);
+        res.status(results.status).send(results.message);
     }
-    if (order) {
-      // console.log("****Order Placed at customer***", order.customerOrders.at(-1).id);
-      res.status(200).send(order);
     }
-  });
-
+});
 });
 
 //Route to list of orders by restaurants for a customer

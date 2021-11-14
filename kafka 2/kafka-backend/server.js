@@ -1,5 +1,12 @@
 var connection = new require('./kafka/Connection');
 const customerLogin = require('./services/customerLogin');
+const customerSignup = require('./services/customerSignup');
+const updateCustomerProfile = require('./services/updateCustomerProfile');
+const getCustomerProfile = require('./services/getCustomerProfile');
+const getCustomerLocation = require('./services/getCustomerLocation');
+const getFavouriteRestaurants = require('./services/getFavouriteRestaurants');
+const placeOrder = require('./services/placeOrder');
+
 //topics files
 //var signin = require('./services/signin.js');
 var Books = require('./services/books.js');
@@ -24,10 +31,7 @@ mongoose.connect(mongoDB, options
     }
   }
 );
-//   const connectionc = mongoose.connection;
-// connectionc.once('openUri', () => {
-//   console.log("MongoDB database connection established successfully");
-// })
+
 function handleTopicRequest(topic_name,fname){
     //var topic_name = 'root_topic';
     var consumer = connection.getConsumer(topic_name);
@@ -61,5 +65,11 @@ function handleTopicRequest(topic_name,fname){
 //first argument is topic name
 //second argument is a function that will handle this topic request
 //handleTopicRequest("post_book", Books);
-handleTopicRequest("customerLoginNew",customerLogin);
+handleTopicRequest("customerLoginNew", customerLogin);
+handleTopicRequest("customerSignup", customerSignup);
+handleTopicRequest("updateCustomerProfile", updateCustomerProfile);
+handleTopicRequest("getCustomerProfile", getCustomerProfile);
+handleTopicRequest("getCustomerLocation", getCustomerLocation);
+handleTopicRequest("getFavouriteRestaurants", getFavouriteRestaurants);
+handleTopicRequest("placeOrder", placeOrder);
 

@@ -57,38 +57,6 @@ const restaurantRouter = require('./routes/restaurant');
 app.use('/customer', customerRouter);
 app.use('/restaurant', restaurantRouter);
 
-//Route to handle Post Request Call for Customer Login
-app.post("/customerLogin", function (req, res) {
-  console.log("Inside Login Post Request");
-  kafka.make_request('customerLoginNew', req.body, function (err, results) {
-      console.log('in customerLogin');
-      console.log(results);
-      if (err) {
-          console.log("Inside err customerLogin");
-          res.writeHead(205, {
-              "Content-Type": "text/plain",
-          });
-          res.end("Unsuccessful Login");
-      } else {
-          console.log("Inside else customerLogin");
-          const payload = { _id: results.data.idCustomers};
-          const token = jwt.sign(payload, secret, {
-              expiresIn: 1008000
-          });
-          console.log("JWT TOKEN CREATED : ", token);
-          console.log("%%%%%%%%4444:",results.data.idCustomers);
-          if (results.status === 200) {
-              res.status(200).end("JWT " + token);
-              //res.status(results.status).send(results.data);
-          } else {
-              res.status(results.status).send(results.message);
-          }
-      }
-
-  });
-
-
-});
   
 app.post('/book', function(req, res){
 

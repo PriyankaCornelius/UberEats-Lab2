@@ -46,9 +46,9 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        var data = { params: { CustomerID: localStorage.getItem("CustomerID") } };
+        var data = { params: { CustomerID: localStorage.getItem("c_id") } };
         axios.get("http://localhost:5000/customer/getCustomerLocation", data).then((response) => {
-            console.log("response: ", response);
+            console.log("response customer location: ", response);
             console.log("customer location: ", response.data.Location);
             //update the state with the response data
             this.setState({

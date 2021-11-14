@@ -353,7 +353,6 @@ router.route("/updateOrderStatus").post( (req, res) => {
   console.log("Inside Update Order Status");
   console.log(req.body.orderStatus, req.body.orderID,'custid', req.body.CustomerID)
   var orderID = req.body.orderID;
-  //var sql = "UPDATE orders SET orderStatus= ? WHERE orderID = ? ";
   Customer.updateOne({_id:req.body.CustomerID,"customerOrders._id":orderID}, { $set:{"customerOrders.$.orderStatus":req.body.orderStatus} }, { useFindAndModify:false  }, (error, order) => {
     if (error) {
       console.log('SQL Error:', err);
@@ -364,7 +363,6 @@ router.route("/updateOrderStatus").post( (req, res) => {
       res.status(200).send("Order Status UPDATED on customer's end");
     }
   });
-
 });
 
 // router.route('/add').post((req, res) => {

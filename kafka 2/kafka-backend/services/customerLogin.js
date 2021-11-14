@@ -1,4 +1,4 @@
-const Customer = require('../models/customer.model');
+const Customer = require('../Models/customer.model');
 const bcrypt = require('bcryptjs');
 
 function handle_request(msg, callback){
@@ -19,11 +19,6 @@ function handle_request(msg, callback){
         console.log(isSame);
         if (isSame === true) {
           console.log("login successfull!");
-        //   res.cookie("cookie", "customer-admin", {
-        //     maxAge: 3600000,
-        //     httpOnly: false,
-        //     path: "/",
-        //   });
           resjson = {
             CustomerID: result._id.toString(),
             password: result.Password,

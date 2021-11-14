@@ -41,13 +41,13 @@ class CustomerProfile extends React.Component {
                 if (response.status === 200) {
                     console.log(response.data);
                     this.setState({
-                        name: response.data.name,
-                        birthdate: response.data.birthdate,
-                        address:response.data.address,
-                        location: response.data.location,
-                        city:response.data.city,
+                        name: response.data.Name,
+                        birthdate: response.data.DOB,
+                        address:response.data.Address,
+                        location: response.data.Location,
+                        city:response.data.City,
                         State:response.data.State,
-                        country: response.data.country || "India",
+                        country: response.data.Country || "India",
                         ProfilePicPath: response.data.ProfilePicPath,
                     });
                     this.props.setName(this.state.name);
