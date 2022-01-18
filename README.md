@@ -8,14 +8,36 @@ UberEats Prototype is a replica of [UberEats](https://www.ubereats.com/) web app
 
 The application has the following features,
 * **Backend**
-    * Each backend route is secured using PassportJS to ensure no unauthorized user can access it
+    * Each backend route is secured using `PassportJS` to ensure no unauthorized user can access it
     * `Kafka` is used to improve performance under a large number of concurrent user requests
-    * MongoDB has been used to store the data of each entity as a collection for easy retreival in a single API call on page load. 
+    * `MongoDB` has been used to store the data of each entity as a collection for easy retreival in a single API call on page load.
+    * `Amazon S3` has been used to store the uploaded images.
 
 * **Frontend**
     * The frontend heavily uses components in `ReactJS` to increase the reusability
-    * Order are shown using `Pagination` so that the user does not get overwhelmed
-    * Redux has been used to maintain a single data store for frontend states.
+    * Orders are shown using `Pagination` so that the user does not get overwhelmed
+    * `Redux` has been used to maintain a single data store for frontend states.
 
 ## Architecture
 ![UberEats architecture](images/image.png)
+
+## Output
+![UberEats Prototype](images/UberEatsOutput.gif)
+
+## Technology Stack
+
+#### Backend
+* NodeJS
+* PassportJS
+* Kafka
+* MongoDB
+
+#### Frontend
+* ReactJS
+* Bootstrap
+* Material UI
+* Redux
+
+#### Deployment
+* AWS EC2
+* Amazon S3
